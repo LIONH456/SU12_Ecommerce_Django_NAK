@@ -103,7 +103,7 @@ def success(request):
 def qr_generate(request):
     if request.method == 'POST':
         try :
-            data = json.loads(request.body)
+            data = request.data
 
             total_payment = data.get("total_payment")
             currency_type = data.get("currency_type")
@@ -302,10 +302,13 @@ def cart_count(request):
 
 @api_view(['GET'])
 def total_cart(request):
-    carts = Cart.objects.filter(disabled=False)
-    data = [cart.as_dict() for cart in carts]
-
-    return JsonResponse(data, safe=False)
+    try:
+        carts = Cart.objects.filter(disabled=False)
+        data = [cart.as_dict() for cart in carts]
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(f"Error in total_cart: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @csrf_exempt
 def cart_delete(request, cart_id):
@@ -461,15 +464,23 @@ def payment_checkout(request):
 
 @api_view(['GET'])
 def cart_detail(request):
-    carts = Cart.objects.all()
-    data = [item.as_dict() for item in carts]
-    return JsonResponse(data,safe=False)
+    try:
+        carts = Cart.objects.all()
+        data = [item.as_dict() for item in carts]
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(f"Error in cart_detail: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
 def order_detail(request):
-    order_details = OrderDetail.objects.all()
-    data = [item.as_dict() for item in order_details]
-    return JsonResponse(data,safe=False)
+    try:
+        order_details = OrderDetail.objects.all()
+        data = [item.as_dict() for item in order_details]
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(f"Error in order_detail: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
 def add_cart_checkout(request):
