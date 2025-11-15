@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
+    image: mysql:5.7
     container_name: ecommerce_db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
@@ -10,10 +10,9 @@ services:
       MYSQL_USER: ${DB_USER:-ecommerce_user}
       MYSQL_PASSWORD: ${DB_PASSWORD:-ecommerce_password}
       MYSQL_CHARSET: utf8mb4
-      MYSQL_COLLATION: utf8mb4_0900_ai_ci
+      MYSQL_COLLATION: utf8mb4_unicode_ci
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ecommerce_network
     healthcheck:
@@ -34,21 +33,11 @@ services:
       - SECRET_KEY=${SECRET_KEY:-your-secret}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
       - DB_ENGINE=${DB_ENGINE:-django.db.backends.mysql}
-      - DB_NAME=${DB_NAME:-ecommerceforfinal}
-      - DB_USER=${DB_USER:-ecommerce_user}
-      - DB_PASSWORD=${DB_PASSWORD:-ecommerce_password}
-      - DB_HOST=${DB_HOST:-db}
-      - DB_PORT=${DB_PORT:-3306}
-      - EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
-      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
-      - EMAIL_PORT=${EMAIL_PORT:-587}
-      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
     volumes:
-      - .:/app
-      - static_files:/app/staticfiles
+      - ./:/app
       - media_files:/app/media
+      - static_files:/app/staticfiles
     depends_on:
       - db
     networks:
@@ -63,14 +52,27 @@ services:
       - "443:443"
     volumes:
       - ./nginx/sustore.conf:/etc/nginx/conf.d/default.conf:ro
-      - static_files:/static:ro
-      - media_files:/media:ro
-      - certs:/etc/letsencrypt
+      - static_files:/app/staticfiles:ro
+      - media_files:/app/media:ro
+      - certs:/etc/letsencrypt:ro
       - certbot_webroot:/var/www/certbot:ro
     depends_on:
       - web
     networks:
       - ecommerce_network
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: ecommerce_certbot
+    volumes:
+      - certs:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    networks:
+      - ecommerce_network
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet && sleep 12h & wait $${!}; done"
+    depends_on:
+      - nginx
     restart: unless-stopped
 
 volumes:

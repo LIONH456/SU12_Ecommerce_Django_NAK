@@ -35,22 +35,21 @@ RUN pip install -r requirements.txt
 # Copy project files
 COPY . /app/
 
-# Copy entrypoint script and make it executable BEFORE changing user
+# Copy entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+
+# Make entrypoint executable with explicit chmod
+RUN chmod 755 /app/entrypoint.sh && \
+    chmod -R 755 /app
 
 # Create necessary directories
-RUN mkdir -p /app/media/qrcodes
-RUN mkdir -p /app/staticfiles
-RUN mkdir -p /app/logs
-
-# Set proper ownership for all app files
-RUN chown -R root:root /app && chmod -R 755 /app
+RUN mkdir -p /app/media/qrcodes && \
+    mkdir -p /app/staticfiles && \
+    mkdir -p /app/logs
 
 # Expose port
 EXPOSE 8000
 
-# Run as root (or remove the USER line below if you had it)
-# CMD is better than ENTRYPOINT for this use case
-CMD ["/app/entrypoint.sh"]
+# Run entrypoint
+CMD ["/bin/sh", "/app/entrypoint.sh"]
 
