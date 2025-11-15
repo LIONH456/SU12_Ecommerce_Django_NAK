@@ -148,19 +148,19 @@ INSERT IGNORE INTO `django_session` (`session_key`, `session_data`, `expire_date
     ('9gcotfkcwlfj8i2t61pywim8fcj8mzke', '.eJyFzbEOwiAYBOBXMf9sGtoIQmeNi9ahcXAiFH6qSaFIcCBN311M3F2_y90t8IpSzwahXcAZCi3wveWoB4KCcVGzoVG2Joxqi6JhhlDYQpqTmmRQ2aFPpUIqsius3zGi11mmHMog3PpDUYdRP5RP0iv31cuxO236a3e-l9A-J_z5v98q-BHW9QP04zYN:1vFRNh:Rr2fizHdk5Zl8cKi1axXhbDv4d4OiUF8AL9RzDygjSM', '2025-11-16 06:16:01.427939'),
     ('ybxc4hevt0otb0ph64nt8s8mwvsku0f9', '.eJyFjb0KwjAYRV9FvrlIDG2N2QKCglShxcEp5FeFJo0hDqH03Y3g7nru4Z4ZXpGrSRugMzjdAAVEpDA7hATRxMq62cp60yKsMbEYt1pDBWlKYuRBZGd8AooRqkC9YzReZZ5yKG9wOvbFdCaqh_CJe-G-dLhezofVwLqO9Wx_K4Z9juY3_iuvg7_DsnwAfxo20w:1vIfJq:GptuFpuavWuvkSkjjIrPUKXDh68ECdOFp3n11DVJ4Sc', '2025-11-25 03:45:22.251289');
 
--- Dumping data for table ecommerceforfinal.home_cart
-INSERT IGNORE INTO `home_cart` (`id`, `name`, `image`, `qty`, `price`, `status`, `product_id`, `disabled`) VALUES
+-- Dumping data for table ecommerceforfinal.Home_cart
+INSERT IGNORE INTO `Home_cart` (`id`, `name`, `image`, `qty`, `price`, `status`, `product_id`, `disabled`) VALUES
     (49, 'Regular Stripped Shirt', 'ZD__4559.jpg', 1, 0.03, 0, 34, 0),
     (50, 'Mini Polo Dresses', 'ZD__3880.jpg', 1, 0.03, 0, 40, 0),
     (51, 'Cropped Fitted T-Shirts', 'ZANDO30.06.20250663.jpg', 1, 0.03, 1, 31, 0);
 
--- Dumping data for table ecommerceforfinal.home_cartcheckout
-INSERT IGNORE INTO `home_cartcheckout` (`id`, `cart_id`, `checkout_id`) VALUES
+-- Dumping data for table ecommerceforfinal.Home_cartcheckout
+INSERT IGNORE INTO `Home_cartcheckout` (`id`, `cart_id`, `checkout_id`) VALUES
     (686, 51, 679),
     (687, 51, 680);
 
--- Dumping data for table ecommerceforfinal.home_category
-INSERT IGNORE INTO `home_category` (`id`, `name`) VALUES
+-- Dumping data for table ecommerceforfinal.Home_category
+INSERT IGNORE INTO `Home_category` (`id`, `name`) VALUES
     (7, 'Hoodies'),
     (4, 'Jackets'),
     (2, 'Jeans'),
@@ -170,8 +170,8 @@ INSERT IGNORE INTO `home_category` (`id`, `name`) VALUES
     (3, 'Sweaters'),
     (1, 'T-Shirts');
 
--- Dumping data for table ecommerceforfinal.home_feature
-INSERT IGNORE INTO `home_feature` (`id`, `title`, `image`) VALUES
+-- Dumping data for table ecommerceforfinal.Home_feature
+INSERT IGNORE INTO `Home_feature` (`id`, `title`, `image`) VALUES
     (1, 'Regular Wrap Shirts', '7_lc5kla.jpg'),
     (2, 'Bubble Hem Mini Skirts', '8_mapllr.jpg'),
     (3, 'Mini Skirts', '9_b8oq2u.jpg'),
