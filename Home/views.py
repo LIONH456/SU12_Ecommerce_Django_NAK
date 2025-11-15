@@ -108,18 +108,26 @@ def qr_generate(request):
 
             khqr = KHQR(bakong_token)
 
+            # Get Bakong merchant details from .env
+            bank_account = os.getenv('BAKONG_MERCHANT_ACCOUNT', 'meng_sonly@wing')
+            merchant_name = os.getenv('BAKONG_MERCHANT_NAME', 'MENG SONLY')
+            merchant_city = os.getenv('BAKONG_MERCHANT_CITY', 'Phnom Penh')
+            phone_number = os.getenv('BAKONG_PHONE_NUMBER', '85510947790')
+            store_label = os.getenv('BAKONG_STORE_LABEL', 'LyCoding')
+            terminal_label = os.getenv('BAKONG_TERMINAL_LABEL', 'Lycod01')
+
             # Generate QR code data for a transaction:
             qr = khqr.create_qr(
-                bank_account='meng_sonly@wing',  # Check your user_name@bank under Bakong profile (Mobile App)
-                merchant_name='MENG SONLY',
-                merchant_city='Phnom Penh',
-                amount=total_payment,  # 9800 Riel
-                currency=currency_type,  # USD or KHR
-                store_label='LyCoding',
-                phone_number='85510947790',
-                bill_number='lo832748sf',
-                terminal_label='Lycod01',
-                static=False  # Static or Dynamic QR code (default: False)
+                bank_account=bank_account,
+                merchant_name=merchant_name,
+                merchant_city=merchant_city,
+                amount=total_payment,
+                currency=currency_type,
+                store_label=store_label,
+                phone_number=phone_number,
+                bill_number='order_' + str(uuid.uuid4())[:8],
+                terminal_label=terminal_label,
+                static=False
             )
 
             # get hash md5
@@ -132,7 +140,7 @@ def qr_generate(request):
                 "md5": md5,
                 "total_payment": total_payment,
                 "currency_type": currency_type,
-                "merchant_name": 'SUONG SAMMARADY',
+                "merchant_name": merchant_name,
                 "filename": filename
             }
 
@@ -267,15 +275,21 @@ def add_to_cart(request):
         try:
             # Use DRF's request.data to avoid reading the body stream directly
             data = request.data
-            print("Received data:", data)
+            print("Received data type:", type(data), "Content:", data)
  
+            # Ensure data is a list
             if isinstance(data, dict):
                 data = [data]
+            elif not isinstance(data, (list, tuple)):
+                return JsonResponse({'error': f'Invalid payload type: {type(data).__name__}, expected array or object'}, status=400)
 
-            if not isinstance(data, (list, tuple)):
-                return JsonResponse({'error': 'Invalid payload, expected array or object'}, status=400)
-
-            for item in data:
+            # Process each item in the cart list
+            for idx, item in enumerate(data):
+                # Validate each item is a dict
+                if not isinstance(item, dict):
+                    print(f"Item {idx} is not a dict: {type(item).__name__} = {item}")
+                    return JsonResponse({'error': f'Item {idx} is not a valid object'}, status=400)
+                
                 product_id = item.get('product_id')
                 if not product_id:
                     return JsonResponse({'error': 'product_id is required for each item'}, status=400)
