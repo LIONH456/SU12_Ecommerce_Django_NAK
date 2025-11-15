@@ -9,11 +9,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (use MariaDB packages instead of MySQL)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    mysql-client \
-    libmysqlclient-dev \
+    mariadb-client \
+    libmariadb-dev \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 

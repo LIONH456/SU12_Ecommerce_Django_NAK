@@ -235,7 +235,7 @@ DJANGO_ALLOWED_HOSTS=your-domain.com,www.your-domain.com,localhost
 **How to generate a strong SECRET_KEY:**
 
 ```bash
-python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
 Copy the output and paste it in `.env` for `SECRET_KEY`.
