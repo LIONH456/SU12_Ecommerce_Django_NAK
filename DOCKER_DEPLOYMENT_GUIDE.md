@@ -106,7 +106,7 @@ apt-get install -y docker.io
 ### Step 2.2: Install Docker Compose
 
 ```bash
-apt-get install -y docker-compose
+apt-get install -y docker compose
 ```
 
 ### Step 2.3: Start Docker Service
@@ -123,7 +123,7 @@ systemctl enable docker
 
 ```bash
 docker --version
-docker-compose --version
+docker compose --version
 ```
 
 Both should show version numbers. If yes, you're good!
@@ -169,7 +169,7 @@ ls -la
 
 You should see:
 - ✅ `Dockerfile` - Recipe for building app container
-- ✅ `docker-compose.yml` - Configuration for all containers
+- ✅ `docker compose.yml` - Configuration for all containers
 - ✅ `.env.example` - Template for environment variables
 - ✅ `requirements.txt` - Python dependencies
 - ✅ `manage.py` - Django management script
@@ -278,7 +278,7 @@ In nano:
 This creates the "blueprint" for your containers:
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 **What it does:**
@@ -291,7 +291,7 @@ This may take 5-10 minutes. ☕
 ### Step 5.2: Start All Containers
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Flags:
@@ -301,7 +301,7 @@ Flags:
 ### Step 5.3: Check Container Status
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 You should see:
@@ -316,7 +316,7 @@ Both should say "Up". If you see "Exited", there's an error.
 ### Step 5.4: Apply Database Migrations
 
 ```bash
-docker-compose exec web python manage.py migrate
+docker compose exec web python manage.py migrate
 ```
 
 This creates all database tables. Should take 10-20 seconds.
@@ -324,7 +324,7 @@ This creates all database tables. Should take 10-20 seconds.
 ### Step 5.5: Create Admin User
 
 ```bash
-docker-compose exec web python manage.py createsuperuser
+docker compose exec web python manage.py createsuperuser
 ```
 
 Follow the prompts:
@@ -335,7 +335,7 @@ Follow the prompts:
 ### Step 5.6: Collect Static Files
 
 ```bash
-docker-compose exec web python manage.py collectstatic --noinput
+docker compose exec web python manage.py collectstatic --noinput
 ```
 
 This gathers all CSS, JavaScript, images for the web server.
@@ -345,7 +345,7 @@ This gathers all CSS, JavaScript, images for the web server.
 If you have sample products in `db.sql`:
 
 ```bash
-docker-compose exec db mysql -u ecommerce_user -p ecommerceforfinal < db.sql
+docker compose exec -T db sh -c "mysql -uecommerce_user -pAdmin123 ecommerceforfinal" < db.sql
 ```
 
 When prompted for password, enter the `DB_PASSWORD` from your `.env` file.
@@ -478,12 +478,12 @@ You should see:
 
 **View application logs:**
 ```bash
-docker-compose logs -f web
+docker compose logs -f web
 ```
 
 **View database logs:**
 ```bash
-docker-compose logs -f db
+docker compose logs -f db
 ```
 
 Press `Ctrl + C` to exit.
@@ -492,41 +492,41 @@ Press `Ctrl + C` to exit.
 
 **Restart all:**
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 **Restart just web:**
 ```bash
-docker-compose restart web
+docker compose restart web
 ```
 
 **Restart just database:**
 ```bash
-docker-compose restart db
+docker compose restart db
 ```
 
 ### Stopping Services
 
 **Stop everything (keeps data):**
 ```bash
-docker-compose down
+docker compose down
 ```
 
 **Stop and remove everything (WARNING - data deleted):**
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Backing Up Database
 
 **Export database:**
 ```bash
-docker-compose exec db mysqldump -u ecommerce_user -p ecommerceforfinal > backup.sql
+docker compose exec db mysqldump -u ecommerce_user -p ecommerceforfinal > backup.sql
 ```
 
 **Restore database:**
 ```bash
-docker-compose exec db mysql -u ecommerce_user -p ecommerceforfinal < backup.sql
+docker compose exec db mysql -u ecommerce_user -p ecommerceforfinal < backup.sql
 ```
 
 ### Updating Code
@@ -538,17 +538,17 @@ git pull origin main
 
 2. Rebuild containers:
 ```bash
-docker-compose build
+docker compose build
 ```
 
 3. Restart:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 4. Apply migrations (if any):
 ```bash
-docker-compose exec web python manage.py migrate
+docker compose exec web python manage.py migrate
 ```
 
 ---
@@ -560,13 +560,13 @@ docker-compose exec web python manage.py migrate
 **Solution:**
 ```bash
 # Check if containers are running
-docker-compose ps
+docker compose ps
 
 # If not running, start them
-docker-compose up -d
+docker compose up -d
 
 # Check logs for errors
-docker-compose logs web
+docker compose logs web
 ```
 
 ### Problem: Database won't connect
@@ -574,13 +574,13 @@ docker-compose logs web
 **Solution:**
 ```bash
 # Check database logs
-docker-compose logs db
+docker compose logs db
 
 # Verify database container is healthy
-docker-compose ps
+docker compose ps
 
 # Restart database
-docker-compose restart db
+docker compose restart db
 
 # Wait 10 seconds and try again
 ```
@@ -590,10 +590,10 @@ docker-compose restart db
 **Solution:**
 ```bash
 # Collect static files
-docker-compose exec web python manage.py collectstatic --noinput
+docker compose exec web python manage.py collectstatic --noinput
 
 # Restart web service
-docker-compose restart web
+docker compose restart web
 ```
 
 ### Problem: Email not sending
@@ -604,7 +604,7 @@ docker-compose restart web
 3. Use Gmail App Password (16 characters), not regular password
 4. Test with:
 ```bash
-docker-compose exec web python manage.py shell
+docker compose exec web python manage.py shell
 # In shell, run:
 from django.core.mail import send_mail
 send_mail("Test", "Message", "from@gmail.com", ["to@gmail.com"])
@@ -631,10 +631,10 @@ docker volume prune
 # Check resource usage
 docker stats
 
-# Scale up workers (edit docker-compose.yml, change --workers 4 to 8)
+# Scale up workers (edit docker compose.yml, change --workers 4 to 8)
 # Then rebuild and restart
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```
 
 ---
@@ -643,28 +643,28 @@ docker-compose up -d
 
 ```bash
 # Start everything
-docker-compose up -d
+docker compose up -d
 
 # Stop everything
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs -f web
+docker compose logs -f web
 
 # Enter container shell
-docker-compose exec web bash
+docker compose exec web bash
 
 # Run Django commands
-docker-compose exec web python manage.py <command>
+docker compose exec web python manage.py <command>
 
 # Database backup
-docker-compose exec db mysqldump -u ecommerce_user -p ecommerceforfinal > backup.sql
+docker compose exec db mysqldump -u ecommerce_user -p ecommerceforfinal > backup.sql
 
 # Restart services
-docker-compose restart
+docker compose restart
 
 # Check status
-docker-compose ps
+docker compose ps
 ```
 
 ---
@@ -682,7 +682,7 @@ docker-compose ps
 
 If something breaks:
 
-1. Check logs: `docker-compose logs -f web`
+1. Check logs: `docker compose logs -f web`
 2. Search the error message online
 3. Ask on Stack Overflow with the error message
 4. Check Docker/Django official documentation
