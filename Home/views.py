@@ -26,6 +26,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 import json
+import traceback
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 from bakong_khqr import KHQR
@@ -144,6 +145,8 @@ def qr_generate(request):
             })
 
         except Exception as e:
+            print("Exception in qr_generate:", str(e))
+            print(traceback.format_exc())
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     else:
         return JsonResponse({
@@ -265,7 +268,8 @@ def email_sender(request):
 def add_to_cart(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body.decode('utf-8'))
+            # Use DRF's request.data to avoid reading the body stream directly
+            data = request.data
             print("Received data:", data)
  
             if isinstance(data, dict):
@@ -293,7 +297,8 @@ def add_to_cart(request):
             return JsonResponse({'message': 'Cart updated successfully!'}, status=201)
 
         except Exception as e:
-            print("Error:", e)
+            print("Exception in add_to_cart:", str(e))
+            print(traceback.format_exc())
             return JsonResponse({'error': str(e)}, status=500)
 
 def cart_count(request):
@@ -456,7 +461,9 @@ def payment_checkout(request):
         }, status=200)
 
     except Exception as e:
-        # If an error occurs, return an error message
+        # If an error occurs, return an error message and log traceback
+        print("Exception in payment_checkout:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=400)
 
 
@@ -470,6 +477,7 @@ def cart_detail(request):
         return JsonResponse(data, safe=False)
     except Exception as e:
         print(f"Error in cart_detail: {str(e)}")
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -480,6 +488,7 @@ def order_detail(request):
         return JsonResponse(data, safe=False)
     except Exception as e:
         print(f"Error in order_detail: {str(e)}")
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
@@ -509,6 +518,8 @@ def add_cart_checkout(request):
         }, status=201)
 
     except Exception as e:
+        print("Exception in add_cart_checkout:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
@@ -564,6 +575,8 @@ def add_customer_info(request):
         }, status=201)
 
     except Exception as e:
+        print("Exception in add_customer_info:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 def orderId(request):
@@ -580,13 +593,16 @@ def orderId(request):
             return JsonResponse({'message': 'No pending orders found'}, status=404)
 
     except Exception as e:
+        print("Exception in payment_success:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
 def payment_success(request):
     try :
         if request.method == 'POST':
-            data = json.loads(request.body)
+            # Use DRF request.data instead of reading request.body
+            data = request.data
 
             from_account_id = data.get('from_account_id')
             description = data.get('description')
@@ -626,13 +642,16 @@ def payment_success(request):
             return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
     except Exception as e:
+        print("Exception in telegram_sender:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])
 def telegram_sender(request):
     try:
         if request.method == 'POST':
-            data = json.loads(request.body)
+            # Use request.data provided by DRF
+            data = request.data
             cart_ids = data.get('cart_id')
 
             # Check if cart_ids is not empty or None
@@ -682,10 +701,22 @@ def telegram_sender(request):
 def update_disabled_cart(request):
     try:
         if request.method == 'POST':
-            data = json.loads(request.body)
+            # For this endpoint we expect JSON payload; use json.loads only on non-DRF views,
+            # but prefer to parse via request.body safely here since it's a plain view.
+            try:
+                data = json.loads(request.body)
+            except Exception:
+                data = {}
+
             cart_id = data.get('cart_id')
 
-            orderid = Order.objects.get(id=cart_id)
+            # If cart_id is provided and corresponds to an Order, fetch it (used elsewhere)
+            orderid = None
+            if cart_id is not None:
+                try:
+                    orderid = Order.objects.get(id=cart_id)
+                except Order.DoesNotExist:
+                    orderid = None
 
             return JsonResponse({
                 'cart_id': cart_id
@@ -694,5 +725,6 @@ def update_disabled_cart(request):
         return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
     except Exception as e:
-        print("ERROR:", str(e))   # Debug
+        print("ERROR in update_disabled_cart:", str(e))   # Debug
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
