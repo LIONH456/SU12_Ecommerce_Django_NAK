@@ -275,22 +275,33 @@ def add_to_cart(request):
             if isinstance(data, dict):
                 data = [data]
 
+            if not isinstance(data, (list, tuple)):
+                return JsonResponse({'error': 'Invalid payload, expected array or object'}, status=400)
+
             for item in data:
-                product_id = item.get('product_id') 
+                product_id = item.get('product_id')
+                if not product_id:
+                    return JsonResponse({'error': 'product_id is required for each item'}, status=400)
+
+                try:
+                    qty = int(item.get('qty', 1))
+                except Exception:
+                    qty = 1
+
                 existing_item = Cart.objects.filter(product_id=product_id).first()
 
-                if existing_item: 
-                    existing_item.qty += int(item.get('qty', 1))
+                if existing_item:
+                    existing_item.qty += qty
                     existing_item.save()
                     print(f"Updated qty for product_id={product_id}, new qty={existing_item.qty}")
-                else: 
+                else:
                     Cart.objects.create(
                         product_id=product_id,
                         name=item.get('name'),
                         image=item.get('image'),
-                        qty=int(item.get('qty')),
-                        status=item.get('status'),
-                        price=item.get('price'),
+                        qty=qty,
+                        status=item.get('status', True),
+                        price=item.get('price', 0),
                     )
                     print(f"Added new product_id={product_id}")
 
@@ -351,17 +362,20 @@ def cart_qty_add(request, cart_id):
             cart_item = get_object_or_404(Cart, id=cart_id)
 
             # Parse JSON safely
+
+
             try:
                 data = json.loads(request.body)
-            except json.JSONDecodeError:
+            except Exception:
                 return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-            # Get add_qty, default to 1 if missing
-            add_qty = data.get('add_qty')
-            if not isinstance(add_qty, int):
-                return JsonResponse({"error": "add_qty must be an integer"}, status=400)
+            # Accept numeric string or int; default delta is 1
+            try:
+                delta = int(data.get('add_qty', 1))
+            except Exception:
+                delta = 1
 
-            cart_item.qty = add_qty + 1
+            cart_item.qty = cart_item.qty + delta
             cart_item.save()
 
             return JsonResponse({"message": "Qty updated successfully", "qty": cart_item.qty})
@@ -378,18 +392,20 @@ def cart_qty_sub(request, cart_id):
             cart_item = get_object_or_404(Cart, id=cart_id)
 
             # Parse JSON safely
+
+
             try:
                 data = json.loads(request.body)
-            except json.JSONDecodeError:
+            except Exception:
                 return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-            # Get subtract quantity, default to 1
-            sub_qty = data.get('sub_qty', 1)
-            if not isinstance(sub_qty, int):
-                return JsonResponse({"error": "sub_qty must be an integer"}, status=400)
+            try:
+                delta = int(data.get('sub_qty', 1))
+            except Exception:
+                delta = 1
 
-            # Prevent quantity going below 0
-            cart_item.qty = max(cart_item.qty - 1, 1)
+            # Prevent quantity going below 1
+            cart_item.qty = max(cart_item.qty - delta, 1)
             cart_item.save()
 
             return JsonResponse({"message": "Qty decreased successfully", "qty": cart_item.qty})
@@ -642,7 +658,7 @@ def payment_success(request):
             return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
     except Exception as e:
-        print("Exception in telegram_sender:", str(e))
+        print("Exception in payment_success:", str(e))
         print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -698,31 +714,24 @@ def telegram_sender(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+@api_view(['POST'])
 def update_disabled_cart(request):
     try:
-        if request.method == 'POST':
-            # For this endpoint we expect JSON payload; use json.loads only on non-DRF views,
-            # but prefer to parse via request.body safely here since it's a plain view.
+        # Use DRF request.data for consistent parsing
+        data = request.data or {}
+
+        cart_id = data.get('cart_id')
+
+        orderid = None
+        if cart_id is not None:
             try:
-                data = json.loads(request.body)
-            except Exception:
-                data = {}
+                orderid = Order.objects.get(id=cart_id)
+            except Order.DoesNotExist:
+                orderid = None
 
-            cart_id = data.get('cart_id')
-
-            # If cart_id is provided and corresponds to an Order, fetch it (used elsewhere)
-            orderid = None
-            if cart_id is not None:
-                try:
-                    orderid = Order.objects.get(id=cart_id)
-                except Order.DoesNotExist:
-                    orderid = None
-
-            return JsonResponse({
-                'cart_id': cart_id
-            })
-
-        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+        return JsonResponse({
+            'cart_id': cart_id
+        })
 
     except Exception as e:
         print("ERROR in update_disabled_cart:", str(e))   # Debug
