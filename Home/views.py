@@ -31,16 +31,13 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 from bakong_khqr import KHQR
 import qrcode
-import os
-import json
-import requests
-from django.http import JsonResponse
-from urllib.parse import quote_plus
-from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import send_mail
-from django.conf import settings
+from dotenv import load_dotenv
 
-bakong_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNhYjk1OGMxYzljNDE1YSJ9LCJpYXQiOjE3NjE0NzEwOTEsImV4cCI6MTc2OTI0NzA5MX0.gVv1mcVp1o0hNrXqe5DOodFg3LIWQUfO3kL8Ems7zL4'
+# Load environment variables from .env
+load_dotenv()
+
+# Get Bakong token from environment, fallback to hardcoded (use .env in production)
+bakong_token = os.getenv('BAKONG_TOKEN', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNhYjk1OGMxYzljNDE1YSJ9LCJpYXQiOjE3NjE0NzEwOTEsImV4cCI6MTc2OTI0NzA5MX0.gVv1mcVp1o0hNrXqe5DOodFg3LIWQUfO3kL8Ems7zL4')
 
 
 def check_payment_status(request):
@@ -712,6 +709,8 @@ def telegram_sender(request):
             return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
     except Exception as e:
+        print("Exception in telegram_sender:", str(e))
+        print(traceback.format_exc())
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])

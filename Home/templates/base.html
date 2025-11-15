@@ -1346,7 +1346,11 @@
                       })
                       .then(response => {
                           if (!response.ok) {
-                              throw new Error('Network response was not ok');
+                              // Log the actual response body for debugging
+                              return response.text().then(text => {
+                                  console.error('Response status:', response.status, 'Body:', text);
+                                  throw new Error(`HTTP ${response.status}: ${text}`);
+                              });
                           }
                           return response.json(); // Parse the JSON response
                       })
@@ -1356,6 +1360,13 @@
                       })
                       .catch(error => {
                           console.error('There was an error with the fetch operation:', error);
+                          Swal.fire({
+                              position: "center",
+                              icon: "error",
+                              title: "Failed to add to cart",
+                              text: error.message || 'Unknown error',
+                              showConfirmButton: true
+                          });
                       });
 
                       Swal.fire({
