@@ -52,9 +52,9 @@ services:
       - "443:443"
     volumes:
       - ./nginx/sustore.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro              # <-- mount Cloudflare origin certs
       - static_files:/app/staticfiles:ro
       - media_files:/app/media:ro
-      - certs:/etc/letsencrypt:ro
       - certbot_webroot:/var/www/certbot:ro
     depends_on:
       - web
