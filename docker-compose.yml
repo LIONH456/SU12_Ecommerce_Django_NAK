@@ -1,16 +1,21 @@
 version: '3.8'
 
 services:
+  services:
   db:
-    image: mysql:5.7
+    image: mariadb:10.11
     container_name: ecommerce_db
     env_file: .env
     environment:
+      # Provide both MYSQL_* and MARIADB_* for compatibility
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
+      MARIADB_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
+      MARIADB_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_CHARSET: utf8mb4
+      MARIADB_PASSWORD: ${DB_PASSWORD}
       MYSQL_COLLATION: utf8mb4_unicode_ci
     volumes:
       - mysql_data:/var/lib/mysql
