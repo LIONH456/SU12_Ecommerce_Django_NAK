@@ -1161,6 +1161,12 @@
     <script type="module">
       import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
 
+      // GET CSRF TOKEN BEFORE ANYTHING ELSE
+      function getCsrfTokenFromMeta() {
+          return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+      }
+      const csrftoken = getCsrfTokenFromMeta();
+
       const App = {
           delimiters: ['[[', ']]'],
               data() {
@@ -1333,10 +1339,11 @@
 
                      // Send the updated cart list to the backend
                       fetch('/addtocart/', {
-                          method: 'POST',
                           headers: {
-                              'Content-Type': 'application/json',
+                              'X-CSRFToken': csrftoken,
+                              'Content-Type': 'application/json'
                           },
+                          method: 'POST',
                           body: JSON.stringify(this.cart_list) // Send cart data as JSON
                       })
                       .then(response => {
@@ -1364,65 +1371,77 @@
                       this.cart_list = [];
                   },
                   cart_count(){
-                      let protocol = window.location.protocol;
-                      let port = window.location.port;
-                      let hostname = window.location.hostname;
-                      let url = `${protocol}//${hostname}:${port}/cartcount`;
-
                       fetch('/cartcount')
                           .then(res => {
                               if (!res.ok) {
-                                  throw new Error(`Failed to fetch products: ${res.statusText}`);
+                                  console.error('Cart count error:', res.status, res.statusText);
+                                  throw new Error(`Failed to fetch cart count: ${res.statusText}`);
                               }
                               return res.json();
                           })
                           .then(data => {
-                              this.total_cart_count = data;
-                      });
+                              if (typeof data === 'number') {
+                                  this.total_cart_count = data;
+                              } else if (Array.isArray(data)) {
+                                  this.total_cart_count = data.length;
+                              } else {
+                                  console.error('Cart count data format unexpected:', data);
+                                  this.total_cart_count = 0;
+                              }
+                          })
+                          .catch(error => {
+                              console.error('Cart count fetch error:', error);
+                              this.total_cart_count = 0;
+                          });
                   },
                   total_cart() {
-                      let protocol = window.location.protocol;
-                      let port = window.location.port;
-                      let hostname = window.location.hostname;
-                      let url = `${protocol}//${hostname}:${port}/total_cart`;
-
                       fetch('/total_cart')
                           .then(res => {
                               if (!res.ok) {
-                                  throw new Error(`Failed to fetch products: ${res.statusText}`);
+                                  console.error('Total cart error:', res.status, res.statusText);
+                                  throw new Error(`Failed to fetch cart total: ${res.statusText}`);
                               }
                               return res.json();
                           })
                           .then(data => {
-                              this.total_cart_number = data;
-                      });
+                              if (Array.isArray(data)) {
+                                  this.total_cart_number = data;
+                              } else {
+                                  console.error('Total cart data format unexpected:', data);
+                                  this.total_cart_number = [];
+                              }
+                          })
+                          .catch(error => {
+                              console.error('Total cart fetch error:', error);
+                              this.total_cart_number = [];
+                          });
                   },
                   delete_cart(id) {
-                      let protocol = window.location.protocol;
-                      let port = window.location.port;
-                      let hostname = window.location.hostname;
-                      let url = `${protocol}//${hostname}:${port}/cart/delete/${id}`;
                       const csrfToken = this.getCsrfToken();
 
                       fetch(`/cart/delete/${id}`,{
                           method: 'DELETE',
                           headers: {
-                              'Content-Type': 'application/json',  // Include CSRF token in the header
-                              'X-CSRFToken': csrfToken,  // Include the CSRF token
+                              'Content-Type': 'application/json',
+                              'X-CSRFToken': csrfToken,
                           }
                       })
                           .then(res => {
                               if (!res.ok) {
-                                  throw new Error(`Failed to delete products: ${res.statusText}`);
+                                  console.error('Delete cart error:', res.status, res.statusText);
+                                  throw new Error(`Failed to delete cart item: ${res.statusText}`);
                               }
                               return res.json();
                           })
                           .then(data => {
-                              console.log(data);
-                      });
+                              console.log('Cart item deleted:', data);
+                          })
+                          .catch(error => {
+                              console.error('Delete cart fetch error:', error);
+                          });
                   },
                   getCsrfToken() {
-                      return document.querySelector('[name=csrfmiddlewaretoken]').content;
+                      return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                   },
                   removeCartElement(index){
                       (this.total_cart_number.length > 1) ?
@@ -1513,44 +1532,44 @@
 
                   },
                   checkedCart(id,cart_status){
-                      let protocol = window.location.protocol;
-                      let port = window.location.port;
-                      let hostname = window.location.hostname;
-                      let url = `${protocol}//${hostname}:${port}/cart/status/${id}`;
                       const csrfToken = this.getCsrfToken();
 
                       fetch(`/cart/status/${id}`,{
                           method: 'PATCH',
                           headers: {
                               'Content-Type': 'application/json',
-                              {#'X-CSRFToken': csrfToken,   #}
+                              'X-CSRFToken': csrfToken,
                           },
                           body: JSON.stringify({ status: cart_status })
                       }).then(
                           res => {
                               if (!res.ok) {
-                                  throw new Error(`Failed to update products: ${res.statusText}`);
+                                  console.error('Check cart error:', res.status, res.statusText);
+                                  throw new Error(`Failed to update cart status: ${res.statusText}`);
                               }
                               return res.json();
                           }
                       ).then(data => {
                           let item = this.total_cart_number.find(c => c.id === id)
-                          item.status = data.status
+                          if(item) {
+                              item.status = data.status
 
-                          let cart_id = new Set(JSON.parse(localStorage.getItem('cart_id')) || []);
+                              let cart_id = new Set(JSON.parse(localStorage.getItem('cart_id')) || []);
 
-                          for (let item of this.total_cart_number) {
-                              if (item.status === true) {
-                                  cart_id.add(item.id);
-                              }else {
-                                  cart_id.delete(item.id);   // ✅ remove ID
+                              for (let item of this.total_cart_number) {
+                                  if (item.status === true) {
+                                      cart_id.add(item.id);
+                                  }else {
+                                      cart_id.delete(item.id);
+                                  }
                               }
+
+                              localStorage.setItem('cart_id', JSON.stringify([...cart_id]));
+                              console.log("cart status updated",data);
                           }
-
-                          localStorage.setItem('cart_id', JSON.stringify([...cart_id]));
-
-
-                          console.log("cart status",data);
+                      })
+                      .catch(error => {
+                          console.error('Check cart fetch error:', error);
                       });
 
 
@@ -1586,24 +1605,42 @@
                       fetch('/cart/cart_detail')
                           .then(res => {
                               if (!res.ok) {
-                                  throw new Error('Error = ' + res);
+                                  console.error('Cart detail error:', res.status, res.statusText);
+                                  throw new Error('Failed to fetch cart details');
                               }
                               return res.json();
                           }).then(data => {
-                              this.cart_list = data.filter(item => item.status === true).map(item => item.id);
-                              {#console.log('cart detail = ',this.cart_list)#}
+                              if (Array.isArray(data)) {
+                                  this.cart_list = data.filter(item => item.status === true).map(item => item.id);
+                              } else {
+                                  console.error('Cart detail data is not an array:', data);
+                                  this.cart_list = [];
+                              }
+                          })
+                          .catch(error => {
+                              console.error('Cart detail fetch error:', error);
+                              this.cart_list = [];
                           });
                   },
                   order_detail(){
                       fetch('/cart/order_detail')
                           .then(res => {
                               if (!res.ok) {
-                                  throw new Error('Error = ' + res);
+                                  console.error('Order detail error:', res.status, res.statusText);
+                                  throw new Error('Failed to fetch order details');
                               }
                               return res.json();
                           }).then(data => {
-                              this.cart_list_detail = data.map(item => item.id);
-                              {#console.log(this.cart_list_detail)#}
+                              if (Array.isArray(data)) {
+                                  this.cart_list_detail = data.map(item => item.id);
+                              } else {
+                                  console.error('Order detail data is not an array:', data);
+                                  this.cart_list_detail = [];
+                              }
+                          })
+                          .catch(error => {
+                              console.error('Order detail fetch error:', error);
+                              this.cart_list_detail = [];
                           });
                   },
                   qr_generate(){
@@ -1709,6 +1746,7 @@
 
               },
               mounted() {
+                  console.log('Vue app mounted. CSRF Token:', csrftoken);
                   this.fetchProducts();
                   this.cart_count();
                   this.total_cart();
