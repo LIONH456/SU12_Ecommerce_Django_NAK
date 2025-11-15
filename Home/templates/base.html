@@ -1327,15 +1327,9 @@
                           this.cart_list.push(cart_product)
                       }
 
-                      // localStorage.setItem('cart_list',JSON.stringify(this.cart_list))
+                      console.log('Sending cart_list to server:', JSON.stringify(this.cart_list));
 
-                      // Fetch the data when the component is mounted
-                      let protocol = window.location.protocol;
-                      let port = window.location.port;
-                      let hostname = window.location.hostname;
-                      let url = `${protocol}//${hostname}:${port}/addtocart/`;
-
-                     // Send the updated cart list to the backend
+                      // Send the updated cart list to the backend
                       fetch('/addtocart/', {
                           headers: {
                               'X-CSRFToken': csrftoken,

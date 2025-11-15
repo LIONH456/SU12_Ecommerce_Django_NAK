@@ -275,23 +275,40 @@ def add_to_cart(request):
         try:
             # Use DRF's request.data to avoid reading the body stream directly
             data = request.data
-            print("Received data type:", type(data), "Content:", data)
+            print("\n=== ADD_TO_CART DEBUG ===")
+            print(f"Received data type: {type(data)}")
+            print(f"Received data content: {data}")
+            print(f"Data repr: {repr(data)}")
+            print(f"Is list?: {isinstance(data, list)}")
+            print(f"Is dict?: {isinstance(data, dict)}")
+            print(f"Is tuple?: {isinstance(data, tuple)}")
  
             # Ensure data is a list
             if isinstance(data, dict):
+                print("Converting dict to list...")
                 data = [data]
             elif not isinstance(data, (list, tuple)):
+                print(f"Invalid payload type: {type(data).__name__}")
                 return JsonResponse({'error': f'Invalid payload type: {type(data).__name__}, expected array or object'}, status=400)
+
+            print(f"Final data length: {len(data)}")
 
             # Process each item in the cart list
             for idx, item in enumerate(data):
+                print(f"Processing item {idx}: type={type(item)}, isinstance(dict)={isinstance(item, dict)}")
+                print(f"  Content: {item}")
+                print(f"  Repr: {repr(item)}")
+                
                 # Validate each item is a dict
                 if not isinstance(item, dict):
                     print(f"Item {idx} is not a dict: {type(item).__name__} = {item}")
+                    print("=== END ADD_TO_CART DEBUG ===\n")
                     return JsonResponse({'error': f'Item {idx} is not a valid object'}, status=400)
                 
                 product_id = item.get('product_id')
                 if not product_id:
+                    print("product_id is required")
+                    print("=== END ADD_TO_CART DEBUG ===\n")
                     return JsonResponse({'error': 'product_id is required for each item'}, status=400)
 
                 try:
@@ -316,11 +333,14 @@ def add_to_cart(request):
                     )
                     print(f"Added new product_id={product_id}")
 
+            print("Cart updated successfully!")
+            print("=== END ADD_TO_CART DEBUG ===\n")
             return JsonResponse({'message': 'Cart updated successfully!'}, status=201)
 
         except Exception as e:
             print("Exception in add_to_cart:", str(e))
             print(traceback.format_exc())
+            print("=== END ADD_TO_CART DEBUG (ERROR) ===\n")
             return JsonResponse({'error': str(e)}, status=500)
 
 def cart_count(request):
