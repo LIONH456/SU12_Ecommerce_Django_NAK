@@ -9,16 +9,22 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies (use MariaDB packages instead of MySQL)
+# Install system dependencies (compatible with Ubuntu 24.04 LTS)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     gcc \
+    g++ \
+    pkg-config \
+    default-libmysqlclient-dev \
     mariadb-client \
     libmariadb-dev \
     python3-dev \
+    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Upgrade pip
-RUN pip install --upgrade pip
+# Upgrade pip, setuptools, and wheel
+RUN pip install --upgrade pip setuptools wheel
 
 # Copy requirements file
 COPY requirements.txt /app/
@@ -36,6 +42,11 @@ RUN chmod +x /app/entrypoint.sh
 # Create necessary directories
 RUN mkdir -p /app/media/qrcodes
 RUN mkdir -p /app/staticfiles
+RUN mkdir -p /app/logs
+
+# Create non-root user for security (optional but recommended)
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
 
 # Expose port
 EXPOSE 8000
