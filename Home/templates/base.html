@@ -1295,8 +1295,6 @@
                                       console.log("No products available.");
                                   } else {
                                       this.Products = data;
-                                      {#console.log("Product Items : ",this.Products);#}
-                                      {#console.log(`${data.length} products fetched.`);#}
                                   }
                               } else {
                                   console.error("Fetched data is not an array", data);
@@ -1571,19 +1569,6 @@
                       .catch(error => {
                           console.error('Check cart fetch error:', error);
                       });
-
-
-                      {# use in local storage#}
-                      {#let find_index = this.cart_list.findIndex(obj => {#}
-                      {#    return obj.id === id#}
-
-                      {##}
-                      {#if(find_index > -1) {#}
-                      {#    this.cart_list[find_index].status = this.cart_list[find_index].status !== true;#}
-
-                      {##}
-                      {#localStorage.setItem('cart_list',JSON.stringify(this.cart_list))#}
-                      {#console.log(this.cart_list[find_index].status)#}
                   },
                   product_detail(product) {
                       this.productDetail = product
