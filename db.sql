@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `django_content_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_content_type: ~16 rows (approximately)
-INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
+INSERT IGNORE INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 	(1, 'admin', 'logentry'),
 	(3, 'auth', 'group'),
 	(2, 'auth', 'permission'),
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS `django_migrations` (
 ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_migrations: ~27 rows (approximately)
-INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
+INSERT IGNORE INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 	(1, 'Home', '0001_initial', '2025-10-27 07:49:37.390361'),
 	(2, 'contenttypes', '0001_initial', '2025-10-27 07:49:37.420046'),
 	(3, 'auth', '0001_initial', '2025-10-27 07:49:37.788478'),
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `django_session` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_session: ~4 rows (approximately)
-INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
+INSERT IGNORE INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
 	('19fumtw8fqm7wadfk6v3ay48c99ojs0z', '.eJyFjs0OgjAQhF_F7JkYyp_C3WiiYqInT83absVIWyz1QAjvbkm4e9udmd1vRrBOkuMSPUI1gkFNUAFE0DXWzCMr2TYJO0rpqO-D4vFNFqYIPo4LK2m-0zIPjiwTkWyRiVSmZaE2GeYZI6EQKVGPcn7jrceWdzhoMh6qIo4jEF_nyIiB-6GbkcfDNSQ1OdGg8XzpdN7V-9XtUp_uwVSvlhb9H3TdmSdM0w9Sn0ih:1vI0a5:Icl1qozFr7zEcQtAFa1GNSWAo29iJ5wQQjOW82xoGTs', '2025-11-23 08:15:25.831536'),
 	('98k995n1c6xkm6gficwig0hax1qftj1g', '.eJyFjbEKwjAURX9F3lwkpkZj9qKgVtDJKcSXFxWaNIY4hNJ_t4K767mHewZ4JY29JVADeCtAwUoupFgyJtAQ2dpJJmrnbsTRSbFZc6gg99l0OpriKWRQnLEK8J0SBSw6lzi9wX53nkxPCR8mZB2M_9Jj025nl1N7uE6je3b04_-i8xjuMI4fcPE1iA:1vIKkP:DY01_pBeJSuVuxnClm5H50RyYv8LQ0IHmPmr3vj7SXQ', '2025-11-24 05:47:25.423298'),
 	('9gcotfkcwlfj8i2t61pywim8fcj8mzke', '.eJyFzbEOwiAYBOBXMf9sGtoIQmeNi9ahcXAiFH6qSaFIcCBN311M3F2_y90t8IpSzwahXcAZCi3wveWoB4KCcVGzoVG2Joxqi6JhhlDYQpqTmmRQ2aFPpUIqsius3zGi11mmHMog3PpDUYdRP5RP0iv31cuxO236a3e-l9A-J_z5v98q-BHW9QP04zYN:1vFRNh:Rr2fizHdk5Zl8cKi1axXhbDv4d4OiUF8AL9RzDygjSM', '2025-11-16 06:16:01.427939'),
@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `home_cart` (
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_cart: ~4 rows (approximately)
-INSERT INTO `home_cart` (`id`, `name`, `image`, `qty`, `price`, `status`, `product_id`, `disabled`) VALUES
+INSERT IGNORE INTO `home_cart` (`id`, `name`, `image`, `qty`, `price`, `status`, `product_id`, `disabled`) VALUES
 	(49, 'Regular Stripped Shirt', 'ZD__4559.jpg', 1, 0.03, 0, 34, 0),
 	(50, 'Mini Polo Dresses', 'ZD__3880.jpg', 1, 0.03, 0, 40, 0),
 	(51, 'Cropped Fitted T-Shirts', 'ZANDO30.06.20250663.jpg', 1, 0.03, 1, 31, 0);
@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS `home_cartcheckout` (
 ) ENGINE=InnoDB AUTO_INCREMENT=688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_cartcheckout: ~38 rows (approximately)
-INSERT INTO `home_cartcheckout` (`id`, `cart_id`, `checkout_id`) VALUES
+INSERT IGNORE INTO `home_cartcheckout` (`id`, `cart_id`, `checkout_id`) VALUES
 	(686, 51, 679),
 	(687, 51, 680);
 
@@ -330,7 +330,7 @@ CREATE TABLE IF NOT EXISTS `home_category` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_category: ~8 rows (approximately)
-INSERT INTO `home_category` (`id`, `name`) VALUES
+INSERT IGNORE INTO `home_category` (`id`, `name`) VALUES
 	(7, 'Hoodies'),
 	(4, 'Jackets'),
 	(2, 'Jeans'),
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS `home_checkout` (
  
 
 -- Dumping data for table ecommerceforfinal.home_feature: ~4 rows (approximately)
-INSERT INTO `home_feature` (`id`, `title`, `image`) VALUES
+INSERT IGNORE INTO `home_feature` (`id`, `title`, `image`) VALUES
 	(1, 'Regular Wrap Shirts', '7_lc5kla.jpg'),
 	(2, 'Bubble Hem Mini Skirts', '8_mapllr.jpg'),
 	(3, 'Mini Skirts', '9_b8oq2u.jpg'),
