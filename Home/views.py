@@ -273,35 +273,25 @@ def email_sender(request):
 def add_to_cart(request):
     if request.method == 'POST':
         try:
-            # Use DRF's request.data to avoid reading the body stream directly
             data = request.data
             print("\n=== ADD_TO_CART DEBUG ===")
             print(f"Received data type: {type(data)}")
-            print(f"Received data content: {data}")
-            print(f"Data repr: {repr(data)}")
-            print(f"Is list?: {isinstance(data, list)}")
-            print(f"Is dict?: {isinstance(data, dict)}")
-            print(f"Is tuple?: {isinstance(data, tuple)}")
- 
+            print(f"Received data: {data}")
+            
             # Ensure data is a list
             if isinstance(data, dict):
-                print("Converting dict to list...")
                 data = [data]
-            elif not isinstance(data, (list, tuple)):
+            elif not isinstance(data, list):
                 print(f"Invalid payload type: {type(data).__name__}")
+                print("=== END ADD_TO_CART DEBUG ===\n")
                 return JsonResponse({'error': f'Invalid payload type: {type(data).__name__}, expected array or object'}, status=400)
 
-            print(f"Final data length: {len(data)}")
+            print(f"Processing {len(data)} items")
 
             # Process each item in the cart list
             for idx, item in enumerate(data):
-                print(f"Processing item {idx}: type={type(item)}, isinstance(dict)={isinstance(item, dict)}")
-                print(f"  Content: {item}")
-                print(f"  Repr: {repr(item)}")
-                
-                # Validate each item is a dict
                 if not isinstance(item, dict):
-                    print(f"Item {idx} is not a dict: {type(item).__name__} = {item}")
+                    print(f"Item {idx} is not a dict: {type(item).__name__}")
                     print("=== END ADD_TO_CART DEBUG ===\n")
                     return JsonResponse({'error': f'Item {idx} is not a valid object'}, status=400)
                 
@@ -338,7 +328,7 @@ def add_to_cart(request):
             return JsonResponse({'message': 'Cart updated successfully!'}, status=201)
 
         except Exception as e:
-            print("Exception in add_to_cart:", str(e))
+            print(f"Exception in add_to_cart: {str(e)}")
             print(traceback.format_exc())
             print("=== END ADD_TO_CART DEBUG (ERROR) ===\n")
             return JsonResponse({'error': str(e)}, status=500)
@@ -461,8 +451,13 @@ def payment_checkout(request):
         product_id = request.data.get('product_id')
         getSelectedCartItems = request.data.get('getSelectedCartItems')
 
-        chat_id = 1576176721
-        token = '8300831905:AAHmRGaoTfLMpWx_HKqTbVYZqgJIkWf-wW0'
+        # Load Telegram credentials from .env with fallback defaults
+        chat_id = os.getenv('TELEGRAM_CHAT_ID', '1576176721')
+        token = os.getenv('TELEGRAM_BOT_TOKEN', '8300831905:AAHmRGaoTfLMpWx_HKqTbVYZqgJIkWf-wW0')
+        
+        print(f"\n=== TELEGRAM PAYMENT CHECKOUT ===")
+        print(f"Chat ID: {chat_id}")
+        print(f"Token loaded: {token[:20]}..." if token else "No token")
 
         cart_length = len(total_cart_check)
 
@@ -492,8 +487,12 @@ def payment_checkout(request):
                    )
 
         url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={quote_plus(message)}&parse_mode=html"
+        print(f"Sending Telegram request to: {url[:80]}...")
+        
         r = requests.get(url)
-        print(r)
+        print(f"Telegram response status: {r.status_code}")
+        print(f"Telegram response: {r.text}")
+        print("=== END TELEGRAM PAYMENT CHECKOUT ===\n")
 
         if r.status_code != 200:
             return JsonResponse({
@@ -509,8 +508,9 @@ def payment_checkout(request):
 
     except Exception as e:
         # If an error occurs, return an error message and log traceback
-        print("Exception in payment_checkout:", str(e))
+        print(f"Exception in payment_checkout: {str(e)}")
         print(traceback.format_exc())
+        print("=== END TELEGRAM PAYMENT CHECKOUT (ERROR) ===\n")
         return JsonResponse({'error': str(e)}, status=400)
 
 
@@ -701,8 +701,13 @@ def telegram_sender(request):
             data = request.data
             cart_ids = data.get('cart_id')
 
+            print(f"\n=== TELEGRAM SENDER ===")
+            print(f"Cart IDs received: {cart_ids}")
+
             # Check if cart_ids is not empty or None
             if not cart_ids:
+                print("ERROR: No cart_id provided or cart_id is empty")
+                print("=== END TELEGRAM SENDER (ERROR) ===\n")
                 return JsonResponse({'error': 'No cart_id provided or cart_id is empty'}, status=400)
 
             # Fetch the cart items
@@ -710,41 +715,80 @@ def telegram_sender(request):
 
             # If no items found, handle that case
             if not cart_items:
+                print(f"ERROR: No cart items found for cart_ids: {cart_ids}")
+                print("=== END TELEGRAM SENDER (ERROR) ===\n")
                 return JsonResponse({'error': 'No cart items found for the provided cart_id(s)'}, status=404)
 
-            # Assuming you want to return some data about the cart items:
+            # Build cart items data for both Telegram and email
             cart_items_data = [
                 {
                     'id': item.id,
                     'name': item.name,
                     'price': item.price,
-                    'qty':item.qty
+                    'qty': item.qty
                 }
                 for item in cart_items
             ]
 
-            # Send email to customer
-            from_email = Checkout.objects.all().last().email
-            your_message = 'Thank You for Your Order!' 
+            # Get Telegram credentials from .env
+            chat_id = os.getenv('TELEGRAM_CHAT_ID', '1576176721')
+            token = os.getenv('TELEGRAM_BOT_TOKEN', '8300831905:AAHmRGaoTfLMpWx_HKqTbVYZqgJIkWf-wW0')
 
-            send_mail(
-                subject='Hello from Shipers Store.',
-                message=str(your_message),
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[from_email],
-                fail_silently=False,
-            )
+            print(f"Chat ID: {chat_id}")
+            print(f"Token loaded: {token[:20]}..." if token else "No token")
+            print(f"Items to send: {len(cart_items_data)}")
+
+            # Build Telegram message with cart items
+            cart_list = [[item['name'], item['qty'], item['price']] for item in cart_items_data]
+            table = tabulate(cart_list, ["Item", "Qty", "Price"], tablefmt="fancy_outline")
+
+            message = (f"<b>Order Summary:</b>\n"
+                      f"<pre>{table}</pre>\n"
+                      f"<b>Total Items:</b> {len(cart_items_data)}")
+
+            url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={quote_plus(message)}&parse_mode=html"
+            print(f"Sending Telegram message...")
+            
+            r = requests.get(url)
+            print(f"Telegram response status: {r.status_code}")
+            print(f"Telegram response: {r.text}")
+
+            if r.status_code != 200:
+                print("ERROR: Failed to send Telegram message")
+                print("=== END TELEGRAM SENDER (ERROR) ===\n")
+                return JsonResponse({'error': 'Failed to send message to Telegram'}, status=500)
+
+            # Send email to customer
+            from_email = Checkout.objects.all().last().email if Checkout.objects.exists() else 'noreply@store.com'
+            your_message = 'Thank You for Your Order!'
+
+            try:
+                send_mail(
+                    subject='Thank You for Your Order - SU Store',
+                    message=str(your_message),
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[from_email],
+                    fail_silently=False,
+                )
+                print(f"Email sent to {from_email}")
+            except Exception as email_error:
+                print(f"WARNING: Failed to send email: {email_error}")
+
+            print("SUCCESS: Telegram message and order confirmed")
+            print("=== END TELEGRAM SENDER ===\n")
 
             return JsonResponse({
                 'status': 'ok',
-                'cart_items': cart_items_data,  # Sending data back
+                'message': 'Order sent to Telegram and email',
+                'cart_items': cart_items_data,
             })
         else:
             return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
     except Exception as e:
-        print("Exception in telegram_sender:", str(e))
+        print(f"Exception in telegram_sender: {str(e)}")
         print(traceback.format_exc())
+        print("=== END TELEGRAM SENDER (ERROR) ===\n")
         return JsonResponse({'error': str(e)}, status=500)
 
 @api_view(['POST'])

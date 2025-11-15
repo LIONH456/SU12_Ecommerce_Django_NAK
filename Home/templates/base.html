@@ -1176,6 +1176,7 @@
 
                       // add to cart
                       cart_list : [],
+                      saved_cart_ids : [],
                       total_cart_count : 0,
                       total_cart_number  : [],
                       total_cart_check : [],
@@ -1601,15 +1602,15 @@
                               return res.json();
                           }).then(data => {
                               if (Array.isArray(data)) {
-                                  this.cart_list = data.filter(item => item.status === true).map(item => item.id);
+                                  this.saved_cart_ids = data.filter(item => item.status === true).map(item => item.id);
                               } else {
                                   console.error('Cart detail data is not an array:', data);
-                                  this.cart_list = [];
+                                  this.saved_cart_ids = [];
                               }
                           })
                           .catch(error => {
                               console.error('Cart detail fetch error:', error);
-                              this.cart_list = [];
+                              this.saved_cart_ids = [];
                           });
                   },
                   order_detail(){
