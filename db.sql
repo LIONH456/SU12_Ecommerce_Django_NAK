@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `auth_group` (
   `name` varchar(150) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_group: ~0 rows (approximately)
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `auth_group_permissions` (
   KEY `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` (`permission_id`),
   CONSTRAINT `auth_group_permissio_permission_id_84c5c92e_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `auth_group_permissions_group_id_b120cbf9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_group_permissions: ~0 rows (approximately)
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_codename_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permission_content_type_id_2f476e4b_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_permission: ~64 rows (approximately)
 INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALUES
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `auth_user` (
   `date_joined` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_user: ~0 rows (approximately)
 
@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `auth_user_groups` (
   KEY `auth_user_groups_group_id_97559544_fk_auth_group_id` (`group_id`),
   CONSTRAINT `auth_user_groups_group_id_97559544_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
   CONSTRAINT `auth_user_groups_user_id_6a12ed8b_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_user_groups: ~0 rows (approximately)
 
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `auth_user_user_permissions` (
   KEY `auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm` (`permission_id`),
   CONSTRAINT `auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
   CONSTRAINT `auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.auth_user_user_permissions: ~0 rows (approximately)
 
@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS `django_admin_log` (
   CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
   CONSTRAINT `django_admin_log_user_id_c564eba6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`),
   CONSTRAINT `django_admin_log_chk_1` CHECK ((`action_flag` >= 0))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_admin_log: ~0 rows (approximately)
 
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_content_type: ~16 rows (approximately)
 INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
@@ -228,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `django_migrations` (
   `name` varchar(255) NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_migrations: ~27 rows (approximately)
 INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `django_session` (
   `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_expire_date_a5c62663` (`expire_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.django_session: ~4 rows (approximately)
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `home_cart` (
   KEY `Home_cart_product_id_dd6a663b_fk_Home_product_id` (`product_id`),
   CONSTRAINT `Home_cart_product_id_dd6a663b_fk_Home_product_id` FOREIGN KEY (`product_id`) REFERENCES `home_product` (`id`),
   CONSTRAINT `home_cart_chk_1` CHECK ((`qty` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_cart: ~4 rows (approximately)
 INSERT INTO `home_cart` (`id`, `name`, `image`, `qty`, `price`, `status`, `product_id`, `disabled`) VALUES
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `home_cartcheckout` (
   KEY `Home_cartcheckout_checkout_id_cd3688f1_fk_Home_checkout_id` (`checkout_id`),
   CONSTRAINT `Home_cartcheckout_cart_id_400a4ec8_fk_Home_cart_id` FOREIGN KEY (`cart_id`) REFERENCES `home_cart` (`id`),
   CONSTRAINT `Home_cartcheckout_checkout_id_cd3688f1_fk_Home_checkout_id` FOREIGN KEY (`checkout_id`) REFERENCES `home_checkout` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=688 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_cartcheckout: ~38 rows (approximately)
 INSERT INTO `home_cartcheckout` (`id`, `cart_id`, `checkout_id`) VALUES
@@ -327,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `home_category` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
 -- Dumping data for table ecommerceforfinal.home_category: ~8 rows (approximately)
 INSERT INTO `home_category` (`id`, `name`) VALUES
@@ -350,7 +350,7 @@ CREATE TABLE IF NOT EXISTS `home_checkout` (
   `total` decimal(10,2) NOT NULL,
   `currency` varchar(3) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=681 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=681 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
  
 
 -- Dumping data for table ecommerceforfinal.home_feature: ~4 rows (approximately)
@@ -371,7 +371,7 @@ CREATE TABLE IF NOT EXISTS `home_order` (
   KEY `Home_order_orderdetail_id_dc79b972_fk_Home_orderdetail_id` (`orderdetail_id`),
   CONSTRAINT `Home_order_checkout_id_85999d4a_fk_Home_checkout_id` FOREIGN KEY (`checkout_id`) REFERENCES `home_checkout` (`id`),
   CONSTRAINT `Home_order_orderdetail_id_dc79b972_fk_Home_orderdetail_id` FOREIGN KEY (`orderdetail_id`) REFERENCES `home_orderdetail` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1335 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1335 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
  
 
@@ -385,7 +385,7 @@ CREATE TABLE IF NOT EXISTS `home_orderdetail` (
   KEY `Home_orderdetail_product_id_ed4000ed_fk_Home_product_id` (`product_id`),
   CONSTRAINT `Home_orderdetail_product_id_ed4000ed_fk_Home_product_id` FOREIGN KEY (`product_id`) REFERENCES `home_product` (`id`),
   CONSTRAINT `home_orderdetail_chk_1` CHECK ((`quantity` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
  
 
@@ -403,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `home_payment` (
   PRIMARY KEY (`id`),
   KEY `Home_payment_order_id_359b36c4_fk_Home_order_id` (`order_id`),
   CONSTRAINT `Home_payment_order_id_359b36c4_fk_Home_order_id` FOREIGN KEY (`order_id`) REFERENCES `home_order` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
  
 -- Dumping structure for table ecommerceforfinal.home_product
@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS `home_product` (
   KEY `Home_product_category_id_89230e2f_fk_Home_category_id` (`category_id`),
   CONSTRAINT `Home_product_category_id_89230e2f_fk_Home_category_id` FOREIGN KEY (`category_id`) REFERENCES `home_category` (`id`),
   CONSTRAINT `home_product_chk_1` CHECK ((`quantity` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
 
  
 
@@ -435,7 +435,7 @@ CREATE TABLE IF NOT EXISTS `home_slider` (
   `image` varchar(200) NOT NULL,
   `status` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;;
  
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
