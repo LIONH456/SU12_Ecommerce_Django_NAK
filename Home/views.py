@@ -61,7 +61,7 @@ def check_payment_status(request):
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {bakong_token}",
             },
-            timeout=10
+            timeout=30
         )
 
         res.raise_for_status()
